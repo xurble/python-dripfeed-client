@@ -23,15 +23,21 @@ class DripFeed:
         if ret.ok:
             return ret.json()
 
-    def add_feed(self, url: str, name=None):
+    def add_feed(self, url: str, name=None, live=True):
 
         data = {
             "url": url,
-            "name": name
+            "name": name,
+            "live": live
         }
-        ret = requests.put(f"{self.server}/api/v1/feeds/", data=data, headers=self.headers, verify=self.verify)
+        ret = requests.put(f"{self.server}/api/v1/feeds/", json=data, headers=self.headers, verify=self.verify)
         if ret.ok:
             return ret.json()["feed"]
+        else:
+            if ret.status_code == 500:
+                raise DripFeedException("Server Error")
+            else:
+                raise DripFeedException(ret.json()["detail"])
 
     def update_feed(self, id: str, name: str, live: bool):
 
@@ -39,12 +45,21 @@ class DripFeed:
             "name": name,
             "live": live
         }
-        ret = requests.post(f"{self.server}/api/v1/feed/{id}/", data=data, headers=self.headers, verify=self.verify)
+        ret = requests.post(f"{self.server}/api/v1/feed/{id}/", json=data, headers=self.headers, verify=self.verify)
         if ret.ok:
-            return ret.json()["item"]
+            return ret.json()["feed"]
+        else:
+            if ret.status_code == 500:
+                raise DripFeedException("Server Error")
+            else:
+                raise DripFeedException(ret.json()["detail"])
 
     def delete_feed(self, id: str):
 
         ret = requests.delete(f"{self.server}/api/v1/feed/{id}/", headers=self.headers, verify=self.verify)
-        if ret.ok:
-            return True
+        if not ret.ok:
+            if ret.status_code == 500:
+                print(ret.content)
+                raise DripFeedException("Server Error")
+            else:
+                raise DripFeedException(ret.json()["detail"])
