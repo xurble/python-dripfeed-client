@@ -1,2 +1,7 @@
-# python-dripfeed-client
-A python client for the DripFeed RSS proxy service
+# Dripfeed Client
+
+This is a simple python wrapper around the [DripFeed API](https://dripfeed.app/)
+
+## Usage
+
+Soon, I promise
