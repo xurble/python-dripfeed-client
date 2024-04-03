@@ -1,2 +1,2 @@
 
-from api import DripFeed, DripFeedException
+from .api import DripFeed, DripFeedException
